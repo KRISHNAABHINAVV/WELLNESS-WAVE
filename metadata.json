@@ -1,0 +1,5 @@
+{
+  "name": "Wellness Wave: Water Quality Monitoring & Outbreak Prediction",
+  "description": "An AI-powered dashboard for real-time water quality monitoring, disease outbreak prediction, and alert management for officials, community workers, and the public under the Wellness Wave initiative.",
+  "requestFramePermissions": []
+}
