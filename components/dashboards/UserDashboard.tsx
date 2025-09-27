@@ -2,16 +2,17 @@
 import React from 'react';
 import Card from '../ui/Card';
 import ImageUpload from '../features/ImageUpload';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const UserDashboard: React.FC = () => {
+    const { t } = useTranslation();
     return (
         <div className="space-y-8">
-            <h1 className="text-3xl font-bold text-white">Your Dashboard</h1>
-            <Card title="Analyze Water Sample Image">
+            <h1 className="text-3xl font-bold text-base-content">{t('user_dashboard_title')}</h1>
+            <Card title={t('analyze_water_image_title')}>
                 <p className="text-base-content mb-4">
-                    Upload a photo of a water sample for a quick visual analysis by our AI.
-                    This can help identify potential issues like turbidity or unusual coloring.
-                    <strong> Disclaimer:</strong> This is not a substitute for professional lab testing.
+                    {t('analyze_water_image_desc')}
+                    <strong> {t('analyze_water_image_disclaimer')}</strong>
                 </p>
                 <ImageUpload />
             </Card>

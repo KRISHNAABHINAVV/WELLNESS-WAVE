@@ -1,10 +1,11 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 import * as topojson from 'topojson-client';
 // FIX: Import Feature type from geojson to resolve namespace error.
 import type { Feature } from 'geojson';
 import { GEO_RISK_DATA } from '../../constants';
-import { RiskLevel } from '../../types';
+import { RiskLevel, AIRiskDataPoint } from '../../types';
 
 // Extend the Feature type from @types/geojson to include properties
 interface CountryFeature extends Feature {
@@ -14,10 +15,15 @@ interface CountryFeature extends Feature {
   };
 }
 
-const RiskGlobe: React.FC = () => {
+interface RiskGlobeProps {
+    riskPoints?: AIRiskDataPoint[];
+}
+
+
+const RiskGlobe: React.FC<RiskGlobeProps> = ({ riskPoints = [] }) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const [worldData, setWorldData] = useState<any>(null);
-    const [rotation, setRotation] = useState<[number, number, number]>([0, -30, 0]);
+    const [rotation, setRotation] = useState<[number, number, number]>([-90, -25, 0]);
 
     const riskColorMap: Record<RiskLevel, string> = {
         [RiskLevel.HIGH]: '#ef4444', // red-500
@@ -70,6 +76,29 @@ const RiskGlobe: React.FC = () => {
             .attr("stroke-width", 0.2)
              .append("title")
             .text((d: any) => `${(d as CountryFeature).properties.name}: ${GEO_RISK_DATA[(d as CountryFeature).properties.iso_a3]?.toUpperCase() || 'N/A'}`);
+        
+        // Draw risk points
+        const riskMarkers = svg.append("g");
+        
+        riskMarkers.selectAll("circle")
+            .data(riskPoints)
+            .enter()
+            .append("circle")
+            .attr("cx", d => projection([d.lng, d.lat])?.[0] ?? -10)
+            .attr("cy", d => projection([d.lng, d.lat])?.[1] ?? -10)
+            .attr("r", d => (projection.scale() / 100) * (d.riskLevel === RiskLevel.HIGH ? 2.5 : 2))
+            .attr("fill", d => riskColorMap[d.riskLevel])
+            .attr("stroke", "white")
+            .attr("stroke-width", 0.5)
+            .attr("opacity", 0.8)
+            .attr("class", d => d.riskLevel === RiskLevel.HIGH ? 'animate-pulse-fast' : '')
+            .style("display", d => {
+                const coords = [d.lng, d.lat] as [number, number];
+                return d3.geoDistance(coords, projection.invert!([width / 2, height / 2])) > 1.57 ? 'none' : 'block';
+             })
+            .append("title")
+            .text(d => `${d.location}: ${d.riskLevel.toUpperCase()} RISK`);
+
 
         const drag = d3.drag<SVGSVGElement, unknown>()
             .on("start", (event) => {
@@ -80,11 +109,20 @@ const RiskGlobe: React.FC = () => {
                 const k = 0.5; // sensitivity
                 projection.rotate([rotate[0] + event.dx * k, rotate[1] - event.dy * k]);
                 svg.selectAll("path").attr("d", path as any);
+
+                // Update risk point positions and visibility
+                riskMarkers.selectAll("circle")
+                    .attr("cx", d => projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])?.[0] ?? -10)
+                    .attr("cy", d => projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])?.[1] ?? -10)
+                    .style("display", d => {
+                        const coords = [(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat] as [number, number];
+                         return d3.geoDistance(coords, [-rotate[0], -rotate[1]]) > 1.57 ? 'none' : 'block';
+                    });
             });
         
         svg.call(drag as any);
 
-    }, [worldData, rotation]);
+    }, [worldData, rotation, riskPoints]);
 
     return (
         <svg ref={svgRef} width="100%" height="100%" viewBox="0 0 500 500"></svg>

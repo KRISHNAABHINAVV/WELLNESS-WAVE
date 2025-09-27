@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { WaterQualityReport, DiseaseCaseReport } from '../../types';
+import { useTranslation } from '../../hooks/useTranslation';
 
 interface TrendChartProps {
     waterData: WaterQualityReport[];
@@ -8,6 +10,7 @@ interface TrendChartProps {
 }
 
 const TrendChart: React.FC<TrendChartProps> = ({ waterData, diseaseData }) => {
+    const { t } = useTranslation();
     // Process data for charting
     const chartWaterData = waterData
         .map(d => ({
@@ -29,7 +32,7 @@ const TrendChart: React.FC<TrendChartProps> = ({ waterData, diseaseData }) => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[800px] lg:h-[400px] p-4">
             <div className="flex flex-col">
-                <h4 className="text-center font-semibold mb-4 text-base-content">Water Quality Trends</h4>
+                <h4 className="text-center font-semibold mb-4 text-base-content">{t('chart_water_title')}</h4>
                 <div className="flex-grow">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartWaterData}>
@@ -45,7 +48,7 @@ const TrendChart: React.FC<TrendChartProps> = ({ waterData, diseaseData }) => {
                 </div>
             </div>
             <div className="flex flex-col">
-                 <h4 className="text-center font-semibold mb-4 text-base-content">Daily Disease Cases</h4>
+                 <h4 className="text-center font-semibold mb-4 text-base-content">{t('chart_disease_title')}</h4>
                 <div className="flex-grow">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartDiseaseData}>

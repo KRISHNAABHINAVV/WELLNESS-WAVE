@@ -1,16 +1,43 @@
-import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-import { WaterQualityReport, DiseaseCaseReport, RiskLevel } from "../types";
+
+import { GoogleGenAI, GenerateContentResponse, Type } from "@google/genai";
+import { WaterQualityReport, DiseaseCaseReport, RiskLevel, AIRiskAnalysis } from "../types";
 
 // FIX: Per @google/genai guidelines, initialize GoogleGenAI with process.env.API_KEY directly and assume it is set. This removes the need for runtime checks.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
 
-export const generateRiskAnalysis = async (waterReports: WaterQualityReport[], diseaseReports: DiseaseCaseReport[]): Promise<string> => {
+const riskAnalysisSchema = {
+    type: Type.OBJECT,
+    properties: {
+        analysisText: {
+            type: Type.STRING,
+            description: "A concise risk assessment summary (2-3 sentences) for Northeast India, including one key preventative action.",
+        },
+        riskData: {
+            type: Type.ARRAY,
+            description: "A list of locations with their calculated risk levels and coordinates based on the input data.",
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    location: { type: Type.STRING, description: "Name of the location." },
+                    lat: { type: Type.NUMBER, description: "Latitude of the location." },
+                    lng: { type: Type.NUMBER, description: "Longitude of the location." },
+                    riskLevel: { type: Type.STRING, enum: [RiskLevel.HIGH, RiskLevel.MEDIUM, RiskLevel.LOW], description: "Calculated risk level." },
+                },
+                required: ["location", "lat", "lng", "riskLevel"],
+            },
+        },
+    },
+    required: ["analysisText", "riskData"],
+};
+
+
+export const generateRiskAnalysis = async (waterReports: WaterQualityReport[], diseaseReports: DiseaseCaseReport[]): Promise<AIRiskAnalysis> => {
   const prompt = `
     Analyze the following water quality and disease case data from Northeast India. The region frequently sees outbreaks of typhoid, diarrhea, hepatitis, and cholera due to contaminated water and poor sanitation. Your analysis should:
-    - Identify regions with the highest risk factors (high bacteria, high turbidity, high case counts of specific diseases like Cholera or Typhoid).
-    - Detect any unusual spikes or anomalies in the data that could signal an impending outbreak.
-    - Provide a concise risk assessment summary (2-3 sentences) specifically for Northeast India.
-    - Suggest one key preventative action, considering the local context and mentioning the importance of surveillance initiatives like ICMR-FoodNet.
+    - Identify regions with the highest risk factors (high bacteria, high turbidity, high case counts).
+    - Determine a risk level (high, medium, or low) for each location present in the data.
+    - Provide a concise risk assessment summary and suggest one key preventative action.
+    - Return the coordinates from the input data for each location.
 
     Water Quality Data:
     ${JSON.stringify(waterReports.slice(0, 5), null, 2)}
@@ -18,18 +45,29 @@ export const generateRiskAnalysis = async (waterReports: WaterQualityReport[], d
     Disease Case Data:
     ${JSON.stringify(diseaseReports.slice(0, 5), null, 2)}
 
-    Your analysis:
+    Based on this data, provide your full analysis in the specified JSON format.
   `;
+  
+  const defaultResponse: AIRiskAnalysis = {
+      analysisText: "An error occurred while analyzing the data. Please try again later.",
+      riskData: [],
+  };
 
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
+      config: {
+          responseMimeType: "application/json",
+          responseSchema: riskAnalysisSchema,
+      }
     });
-    return response.text;
+    // The response is a string that needs to be parsed
+    const jsonString = response.text.trim();
+    return JSON.parse(jsonString) as AIRiskAnalysis;
   } catch (error) {
     console.error("Error generating risk analysis:", error);
-    return "An error occurred while analyzing the data. Please try again later.";
+    return defaultResponse;
   }
 };
 

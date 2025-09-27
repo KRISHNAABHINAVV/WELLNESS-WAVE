@@ -55,3 +55,17 @@ export interface Alert {
     timestamp: string;
     status: AlertStatus;
 }
+
+// New type for structured AI risk data points
+export interface AIRiskDataPoint {
+    location: string;
+    lat: number;
+    lng: number;
+    riskLevel: RiskLevel;
+}
+
+// New type for the overall AI analysis response
+export interface AIRiskAnalysis {
+    analysisText: string;
+    riskData: AIRiskDataPoint[];
+}

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Navbar from './components/layout/Navbar';
 import PublicDashboard from './components/dashboards/PublicDashboard';
 import UserDashboard from './components/dashboards/UserDashboard';
@@ -42,7 +43,9 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <AuthProvider>
+      <LanguageProvider>
         <AppContent />
+      </LanguageProvider>
     </AuthProvider>
   );
 };

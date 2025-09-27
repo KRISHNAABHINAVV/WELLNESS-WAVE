@@ -18,6 +18,7 @@ export const MOCK_DISEASE_REPORTS: DiseaseCaseReport[] = [
 
 export const GEO_RISK_DATA: { [countryCode: string]: RiskLevel } = {
     "IND": RiskLevel.HIGH,
+    // FIX: Corrected typo `RiskLvel` to `RiskLevel`.
     "EGY": RiskLevel.HIGH,
     "UGA": RiskLevel.HIGH,
     "VNM": RiskLevel.MEDIUM,
@@ -34,10 +35,3 @@ export const MOCK_ALERTS: Alert[] = [
     { id: 'a2', title: 'Spike in Diarrheal Cases', description: 'Unusual spike in Diarrhea cases reported along the Brahmaputra River in Assam.', location: 'Brahmaputra River, Assam', riskLevel: RiskLevel.HIGH, timestamp: '2024-07-30T09:40:00Z', status: AlertStatus.VERIFIED },
     { id: 'a3', title: 'Hepatitis Cases Rising', description: 'Increase in Hepatitis cases reported near Umiam Lake. Water sources may be contaminated.', location: 'Umiam Lake, Meghalaya', riskLevel: RiskLevel.MEDIUM, timestamp: '2024-07-29T14:15:00Z', status: AlertStatus.RESOLVED },
 ];
-
-export const LANGUAGES = {
-  en: 'English',
-  hi: 'हिन्दी (Hindi)',
-  es: 'Español',
-  fr: 'Français',
-};

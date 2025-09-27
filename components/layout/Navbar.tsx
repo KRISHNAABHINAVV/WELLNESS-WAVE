@@ -1,13 +1,19 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import LoginModal from '../auth/LoginModal';
 import Button from '../ui/Button';
-import { BellIcon, GlobeIcon, LoginIcon, LogoutIcon, TranslateIcon, WaterDropIcon } from '../ui/Icons';
+import { BellIcon, LoginIcon, LogoutIcon, TranslateIcon, WaterDropIcon } from '../ui/Icons';
 import { MOCK_ALERTS } from '../../constants';
 import { Alert, RiskLevel } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
+import { useTranslation } from '../../hooks/useTranslation';
+import { LANGUAGES } from '../../i18n';
 
 const Navbar: React.FC = () => {
     const { user, logout } = useAuth();
+    const { t } = useTranslation();
+    const { language, setLanguage } = useLanguage();
     const [isLoginModalOpen, setLoginModalOpen] = useState(false);
     const [isAlertsOpen, setAlertsOpen] = useState(false);
 
@@ -37,7 +43,7 @@ const Navbar: React.FC = () => {
                                 </button>
                                 {isAlertsOpen && (
                                     <div className="absolute right-0 mt-2 w-80 bg-base-100 rounded-lg shadow-xl p-4 z-50 border border-base-300">
-                                        <h3 className="font-bold text-lg mb-2 text-base-content">Notifications</h3>
+                                        <h3 className="font-bold text-lg mb-2 text-base-content">{t('notifications')}</h3>
                                         <ul className="space-y-2 max-h-96 overflow-y-auto">
                                           {MOCK_ALERTS.map((alert: Alert) => (
                                             <li key={alert.id} className={`p-2 rounded-md bg-base-200 border-l-4 ${riskColorMap[alert.riskLevel].replace('text-', 'border-')}`}>
@@ -50,25 +56,32 @@ const Navbar: React.FC = () => {
                                 )}
                             </div>
                            
-                            {/* Dummy Language Selector */}
                              <div className="relative">
-                                <button className="p-2 rounded-full text-gray-600 hover:bg-base-300 hover:text-primary transition-colors">
-                                    <TranslateIcon className="h-6 w-6" />
-                                </button>
+                                <TranslateIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" />
+                                <select
+                                    value={language}
+                                    onChange={(e) => setLanguage(e.target.value)}
+                                    className="pl-10 pr-4 py-2 appearance-none bg-base-200 border border-transparent rounded-full text-gray-600 hover:bg-base-300 hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+                                    aria-label="Select language"
+                                >
+                                    {Object.entries(LANGUAGES).map(([code, name]) => (
+                                        <option key={code} value={code}>{name}</option>
+                                    ))}
+                                </select>
                             </div>
 
                             {user ? (
                                 <div className="flex items-center space-x-4">
-                                    <span className="hidden md:block text-gray-700">Welcome, {user.name}</span>
+                                    <span className="hidden md:block text-gray-700">{t('welcome', { name: user.name })}</span>
                                     <Button onClick={logout} variant="ghost" size="sm">
                                         <LogoutIcon className="h-5 w-5 mr-2"/>
-                                        Logout
+                                        {t('logout')}
                                     </Button>
                                 </div>
                             ) : (
                                 <Button onClick={() => setLoginModalOpen(true)} variant="primary" size="sm">
                                     <LoginIcon className="h-5 w-5 mr-2" />
-                                    Login
+                                    {t('login')}
                                 </Button>
                             )}
                         </div>

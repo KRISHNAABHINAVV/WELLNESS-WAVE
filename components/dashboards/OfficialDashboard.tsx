@@ -5,9 +5,11 @@ import { MOCK_ALERTS } from '../../constants';
 import { Alert, AlertStatus, RiskLevel } from '../../types';
 import Button from '../ui/Button';
 import { CheckCircleIcon, XCircleIcon, AlertTriangleIcon } from '../ui/Icons';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const OfficialDashboard: React.FC = () => {
     const [alerts, setAlerts] = useState<Alert[]>(MOCK_ALERTS);
+    const { t } = useTranslation();
 
     const handleStatusChange = (id: string, newStatus: AlertStatus) => {
         setAlerts(alerts.map(alert => alert.id === id ? { ...alert, status: newStatus } : alert));
@@ -28,17 +30,17 @@ const OfficialDashboard: React.FC = () => {
 
     return (
         <div className="space-y-8">
-            <h1 className="text-3xl font-bold text-white">Official Alert Management</h1>
-            <Card title="Active Alerts">
+            <h1 className="text-3xl font-bold text-base-content">{t('official_dashboard_title')}</h1>
+            <Card title={t('active_alerts_title')}>
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-base-200">
                         <thead className="bg-base-300">
                             <tr>
-                                <th className="py-3 px-4 text-left">Risk</th>
-                                <th className="py-3 px-4 text-left">Alert</th>
-                                <th className="py-3 px-4 text-left">Location</th>
-                                <th className="py-3 px-4 text-left">Status</th>
-                                <th className="py-3 px-4 text-left">Actions</th>
+                                <th className="py-3 px-4 text-left">{t('th_risk')}</th>
+                                <th className="py-3 px-4 text-left">{t('th_alert')}</th>
+                                <th className="py-3 px-4 text-left">{t('th_location')}</th>
+                                <th className="py-3 px-4 text-left">{t('th_status')}</th>
+                                <th className="py-3 px-4 text-left">{t('th_actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -57,15 +59,15 @@ const OfficialDashboard: React.FC = () => {
                                     </td>
                                     <td className="py-3 px-4 space-x-2">
                                         {alert.status === AlertStatus.NEW && (
-                                            <Button size="sm" variant='secondary' onClick={() => handleStatusChange(alert.id, AlertStatus.VERIFIED)}>Verify</Button>
+                                            <Button size="sm" variant='secondary' onClick={() => handleStatusChange(alert.id, AlertStatus.VERIFIED)}>{t('action_verify')}</Button>
                                         )}
                                         {alert.status === AlertStatus.VERIFIED && (
                                             <>
                                                 <Button size="sm" variant='primary' onClick={() => handleStatusChange(alert.id, AlertStatus.RESOLVED)}>
-                                                    <CheckCircleIcon className="h-4 w-4 mr-1"/> Resolve
+                                                    <CheckCircleIcon className="h-4 w-4 mr-1"/> {t('action_resolve')}
                                                 </Button>
                                                 <Button size="sm" variant='danger' onClick={() => handleStatusChange(alert.id, AlertStatus.UNRESOLVED)}>
-                                                    <XCircleIcon className="h-4 w-4 mr-1"/> Unresolved
+                                                    <XCircleIcon className="h-4 w-4 mr-1"/> {t('action_unresolved')}
                                                 </Button>
                                             </>
                                         )}

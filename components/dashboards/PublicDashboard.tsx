@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import Card from '../ui/Card';
 import { MOCK_WATER_REPORTS, MOCK_DISEASE_REPORTS } from '../../constants';
@@ -6,15 +7,18 @@ import Button from '../ui/Button';
 import { AlertTriangleIcon, CheckCircleIcon, GlobeIcon, LoaderIcon } from '../ui/Icons';
 import TrendChart from '../visualizations/TrendChart';
 import RiskGlobe from '../visualizations/RiskGlobe';
+import { useTranslation } from '../../hooks/useTranslation';
+import { AIRiskAnalysis } from '../../types';
 
 const PublicDashboard: React.FC = () => {
-    const [aiAnalysis, setAiAnalysis] = useState<string>('');
+    const [aiRiskOutput, setAiRiskOutput] = useState<AIRiskAnalysis | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const { t } = useTranslation();
 
     const getAnalysis = useCallback(async () => {
         setIsLoading(true);
         const analysis = await generateRiskAnalysis(MOCK_WATER_REPORTS, MOCK_DISEASE_REPORTS);
-        setAiAnalysis(analysis);
+        setAiRiskOutput(analysis);
         setIsLoading(false);
     }, []);
 
@@ -24,36 +28,36 @@ const PublicDashboard: React.FC = () => {
 
     return (
         <div className="space-y-8">
-            <h1 className="text-4xl font-bold text-center text-base-content">Water Health Dashboard: Northeast India Focus</h1>
+            <h1 className="text-4xl font-bold text-center text-base-content">{t('public_dashboard_title')}</h1>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
-                    <Card title="Regional Risk Hotspots" icon={<GlobeIcon className="h-6 w-6"/>} className="h-full shadow-lg">
-                         <p className="mb-4 text-gray-600">Interactive map showing areas with reported water quality issues. Red indicates high risk, orange medium, and green low. While the globe shows global data, our current focus is on Northeast India.</p>
+                    <Card title={t('risk_hotspots_title')} icon={<GlobeIcon className="h-6 w-6"/>} className="h-full shadow-lg">
+                         <p className="mb-4 text-gray-600">{t('risk_hotspots_desc')}</p>
                          <div className="h-[400px] bg-base-200 rounded-lg overflow-hidden flex items-center justify-center border border-base-300">
-                            <RiskGlobe />
+                            <RiskGlobe riskPoints={aiRiskOutput?.riskData} />
                          </div>
                     </Card>
                 </div>
                 <div className="lg:col-span-1">
-                     <Card title="AI Outbreak Prediction: Northeast India" icon={<AlertTriangleIcon className="h-6 w-6"/>} className="h-full shadow-lg">
+                     <Card title={t('ai_prediction_title')} icon={<AlertTriangleIcon className="h-6 w-6"/>} className="h-full shadow-lg">
                         <div className="flex flex-col h-full">
-                            <p className="text-gray-600 mb-4">Gemini AI analysis of regional data to detect anomalies and predict potential outbreaks of diseases like Cholera, Typhoid, and Hepatitis.</p>
+                            <p className="text-gray-600 mb-4">{t('ai_prediction_desc')}</p>
                             {isLoading ? (
                                 <div className="flex-grow flex items-center justify-center">
                                     <div className="text-center">
                                         <LoaderIcon className="h-12 w-12 mx-auto text-primary"/>
-                                        <p className="mt-2">Analyzing latest regional data...</p>
+                                        <p className="mt-2">{t('analyzing_data')}</p>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="flex-grow bg-base-200 p-4 rounded-lg text-gray-700 whitespace-pre-wrap font-mono text-sm border border-base-300">
-                                    {aiAnalysis}
+                                    {aiRiskOutput?.analysisText}
                                 </div>
                             )}
                             <div className="mt-4">
                                 <Button onClick={getAnalysis} disabled={isLoading} className="w-full">
-                                    {isLoading ? 'Re-analyzing...' : 'Refresh Analysis'}
+                                    {isLoading ? t('re_analyzing') : t('refresh_analysis')}
                                 </Button>
                             </div>
                         </div>
@@ -61,46 +65,46 @@ const PublicDashboard: React.FC = () => {
                 </div>
             </div>
 
-            <Card title="Data Trends in Northeast India" className="shadow-lg">
+            <Card title={t('data_trends_title')} className="shadow-lg">
                 <TrendChart waterData={MOCK_WATER_REPORTS} diseaseData={MOCK_DISEASE_REPORTS} />
             </Card>
 
-            <Card title="Precautions & Regional Guidelines" icon={<CheckCircleIcon className="h-6 w-6" />} className="shadow-lg">
+            <Card title={t('precautions_title')} icon={<CheckCircleIcon className="h-6 w-6" />} className="shadow-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-gray-700">
                     <div>
-                        <h4 className="font-bold text-lg text-primary mb-2">For Individuals</h4>
+                        <h4 className="font-bold text-lg text-primary mb-2">{t('precautions_individuals_title')}</h4>
                         <ul className="list-disc list-inside space-y-1">
-                            <li>Drink only boiled, filtered, or purified water.</li>
-                            <li>Wash hands frequently with soap, especially before eating.</li>
-                            <li>Ensure food is cooked thoroughly and eaten hot.</li>
-                            <li>Get vaccinated for Typhoid and Hepatitis A if possible.</li>
+                            <li>{t('precautions_individuals_1')}</li>
+                            <li>{t('precautions_individuals_2')}</li>
+                            <li>{t('precautions_individuals_3')}</li>
+                            <li>{t('precautions_individuals_4')}</li>
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-bold text-lg text-secondary mb-2">For Communities</h4>
+                        <h4 className="font-bold text-lg text-secondary mb-2">{t('precautions_communities_title')}</h4>
                         <ul className="list-disc list-inside space-y-1">
-                            <li>Protect and maintain community water sources (wells, springs).</li>
-                            <li>Report any water pipeline leakages to authorities.</li>
-                            <li>Promote proper sanitation and waste disposal.</li>
-                            <li>Consult ASHA workers for health information.</li>
+                            <li>{t('precautions_communities_1')}</li>
+                            <li>{t('precautions_communities_2')}</li>
+                            <li>{t('precautions_communities_3')}</li>
+                            <li>{t('precautions_communities_4')}</li>
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-bold text-lg text-accent mb-2">When to Seek Help</h4>
+                        <h4 className="font-bold text-lg text-accent mb-2">{t('precautions_help_title')}</h4>
                         <ul className="list-disc list-inside space-y-1">
-                            <li>Severe watery diarrhea (symptom of Cholera).</li>
-                            <li>Prolonged high fever (symptom of Typhoid).</li>
-                            <li>Jaundice - yellowing of eyes/skin (symptom of Hepatitis).</li>
-                            <li>Immediately contact local health centers.</li>
+                            <li>{t('precautions_help_1')}</li>
+                            <li>{t('precautions_help_2')}</li>
+                            <li>{t('precautions_help_3')}</li>
+                            <li>{t('precautions_help_4')}</li>
                         </ul>
                     </div>
                      <div>
-                        <h4 className="font-bold text-lg text-warning mb-2">Regional Response</h4>
+                        <h4 className="font-bold text-lg text-warning mb-2">{t('precautions_response_title')}</h4>
                         <ul className="list-disc list-inside space-y-1">
-                            <li>Integrated surveillance systems are crucial for tracking outbreaks.</li>
-                            <li>Initiatives like <span className="font-semibold">ICMR-FoodNet</span> help generate real-time data.</li>
-                            <li>Improved sanitation is key to preventing disease spread.</li>
-                            <li>Addressing malnutrition can reduce disease severity.</li>
+                            <li>{t('precautions_response_1')}</li>
+                            <li>{t('precautions_response_2')}</li>
+                            <li><span className="font-semibold">ICMR-FoodNet</span> {t('precautions_response_3')}</li>
+                            <li>{t('precautions_response_4')}</li>
                         </ul>
                     </div>
                 </div>
