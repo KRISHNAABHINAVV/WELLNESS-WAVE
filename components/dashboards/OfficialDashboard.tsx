@@ -6,6 +6,7 @@ import { Alert, AlertStatus, RiskLevel } from '../../types';
 import Button from '../ui/Button';
 import { CheckCircleIcon, XCircleIcon, AlertTriangleIcon } from '../ui/Icons';
 import { useTranslation } from '../../hooks/useTranslation';
+import CommonDashboardElements from './CommonDashboardElements';
 
 const OfficialDashboard: React.FC = () => {
     const [alerts, setAlerts] = useState<Alert[]>(MOCK_ALERTS);
@@ -78,6 +79,11 @@ const OfficialDashboard: React.FC = () => {
                     </table>
                 </div>
             </Card>
+
+            <div className="border-t-2 border-dashed border-base-300 my-12"></div>
+
+            <h2 className="text-3xl font-bold text-center text-base-content">{t('public_dashboard_title')}</h2>
+            <CommonDashboardElements />
         </div>
     );
 };

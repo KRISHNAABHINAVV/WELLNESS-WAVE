@@ -3,6 +3,7 @@ import React from 'react';
 import Card from '../ui/Card';
 import ImageUpload from '../features/ImageUpload';
 import { useTranslation } from '../../hooks/useTranslation';
+import CommonDashboardElements from './CommonDashboardElements';
 
 const UserDashboard: React.FC = () => {
     const { t } = useTranslation();
@@ -16,7 +17,11 @@ const UserDashboard: React.FC = () => {
                 </p>
                 <ImageUpload />
             </Card>
-            {/* Future components for viewing reports can be added here */}
+            
+            <div className="border-t-2 border-dashed border-base-300 my-12"></div>
+
+            <h2 className="text-3xl font-bold text-center text-base-content">{t('public_dashboard_title')}</h2>
+            <CommonDashboardElements />
         </div>
     );
 };

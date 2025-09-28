@@ -23,7 +23,6 @@ interface RiskGlobeProps {
 const RiskGlobe: React.FC<RiskGlobeProps> = ({ riskPoints = [] }) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const [worldData, setWorldData] = useState<any>(null);
-    const [rotation, setRotation] = useState<[number, number, number]>([-90, -25, 0]);
 
     const riskColorMap: Record<RiskLevel, string> = {
         [RiskLevel.HIGH]: '#ef4444', // red-500
@@ -49,7 +48,7 @@ const RiskGlobe: React.FC<RiskGlobeProps> = ({ riskPoints = [] }) => {
         const projection = d3.geoOrthographic()
             .scale(220)
             .translate([width / 2, height / 2])
-            .rotate(rotation)
+            .rotate([-90, -25, 0])
             .clipAngle(90);
 
         const path = d3.geoPath().projection(projection);
@@ -77,8 +76,9 @@ const RiskGlobe: React.FC<RiskGlobeProps> = ({ riskPoints = [] }) => {
              .append("title")
             .text((d: any) => `${(d as CountryFeature).properties.name}: ${GEO_RISK_DATA[(d as CountryFeature).properties.iso_a3]?.toUpperCase() || 'N/A'}`);
         
-        // Draw risk points
+        // Draw risk points and labels
         const riskMarkers = svg.append("g");
+        const riskLabels = svg.append("g");
         
         riskMarkers.selectAll("circle")
             .data(riskPoints)
@@ -94,21 +94,44 @@ const RiskGlobe: React.FC<RiskGlobeProps> = ({ riskPoints = [] }) => {
             .attr("class", d => d.riskLevel === RiskLevel.HIGH ? 'animate-pulse-fast' : '')
             .style("display", d => {
                 const coords = [d.lng, d.lat] as [number, number];
-                return d3.geoDistance(coords, projection.invert!([width / 2, height / 2])) > 1.57 ? 'none' : 'block';
+                return d3.geoDistance(coords, projection.invert!([width / 2, height / 2])) > Math.PI / 2 ? 'none' : 'block';
              })
             .append("title")
             .text(d => `${d.location}: ${d.riskLevel.toUpperCase()} RISK`);
 
+        riskLabels.selectAll("text")
+            .data(riskPoints)
+            .enter()
+            .append("text")
+            .attr("x", d => projection([d.lng, d.lat])?.[0] ? projection([d.lng, d.lat])![0] + 8 : -1000)
+            .attr("y", d => projection([d.lng, d.lat])?.[1] ? projection([d.lng, d.lat])![1] + 4 : -1000)
+            .text(d => d.location)
+            .attr("fill", "#1f2937")
+            .attr("font-weight", "600")
+            .style("text-anchor", "start")
+            .style("paint-order", "stroke")
+            .attr("stroke", "rgba(255, 255, 255, 0.8)")
+            .attr("stroke-width", "3px")
+            .attr("stroke-linecap", "butt")
+            .attr("stroke-linejoin", "miter")
+            .attr("font-size", "10px")
+            .style("display", d => {
+                const coords = [d.lng, d.lat] as [number, number];
+                return d3.geoDistance(coords, projection.invert!([width / 2, height / 2])) > Math.PI / 2 ? 'none' : 'block';
+            });
+
 
         const drag = d3.drag<SVGSVGElement, unknown>()
             .on("start", (event) => {
-                // No need for invert, but keep handler structure
+                event.sourceEvent.stopPropagation();
             })
             .on("drag", (event) => {
                 const rotate = projection.rotate();
-                const k = 0.5; // sensitivity
+                const k = 75 / projection.scale(); // Adjust sensitivity based on zoom
                 projection.rotate([rotate[0] + event.dx * k, rotate[1] - event.dy * k]);
                 svg.selectAll("path").attr("d", path as any);
+                
+                const currentRotation = projection.rotate();
 
                 // Update risk point positions and visibility
                 riskMarkers.selectAll("circle")
@@ -116,13 +139,41 @@ const RiskGlobe: React.FC<RiskGlobeProps> = ({ riskPoints = [] }) => {
                     .attr("cy", d => projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])?.[1] ?? -10)
                     .style("display", d => {
                         const coords = [(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat] as [number, number];
-                         return d3.geoDistance(coords, [-rotate[0], -rotate[1]]) > 1.57 ? 'none' : 'block';
+                         return d3.geoDistance(coords, [-currentRotation[0], -currentRotation[1]]) > Math.PI / 2 ? 'none' : 'block';
+                    });
+                
+                // Update label positions and visibility
+                riskLabels.selectAll("text")
+                    .attr("x", d => projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])?.[0] ? projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])![0] + 8 : -1000)
+                    .attr("y", d => projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])?.[1] ? projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])![1] + 4 : -1000)
+                    .style("display", d => {
+                        const coords = [(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat] as [number, number];
+                        return d3.geoDistance(coords, [-currentRotation[0], -currentRotation[1]]) > Math.PI / 2 ? 'none' : 'block';
                     });
             });
         
-        svg.call(drag as any);
+        const initialScale = projection.scale();
+        const zoom = d3.zoom<SVGSVGElement, unknown>()
+            .scaleExtent([0.8, 10])
+            .on('zoom', (event) => {
+                projection.scale(initialScale * event.transform.k);
+                svg.selectAll("path").attr("d", path as any);
+                const currentScale = projection.scale();
 
-    }, [worldData, rotation, riskPoints]);
+                riskMarkers.selectAll("circle")
+                    .attr("cx", d => projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])?.[0] ?? -10)
+                    .attr("cy", d => projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])?.[1] ?? -10)
+                    .attr("r", d => (currentScale / 100) * (d.riskLevel === RiskLevel.HIGH ? 2.5 : 2));
+
+                riskLabels.selectAll("text")
+                    .attr("x", d => projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])?.[0] ? projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])![0] + 8 : -1000)
+                    .attr("y", d => projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])?.[1] ? projection([(d as AIRiskDataPoint).lng, (d as AIRiskDataPoint).lat])![1] + 4 : -1000)
+                    .attr("font-size", `${Math.max(8, Math.min(12, currentScale / 25))}px`);
+            });
+        
+        svg.call(drag as any).call(zoom as any);
+
+    }, [worldData, riskPoints]);
 
     return (
         <svg ref={svgRef} width="100%" height="100%" viewBox="0 0 500 500"></svg>

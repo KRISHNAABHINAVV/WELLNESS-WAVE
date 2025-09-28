@@ -14,6 +14,7 @@ type TranslationKeys = {
     welcome: string;
     logout: string;
     login: string;
+    signup: string;
     // Login Modal
     login_modal_title: string;
     login_modal_desc: string;
@@ -22,6 +23,11 @@ type TranslationKeys = {
     role_asha: string;
     role_official: string;
     login_as: string;
+    email: string;
+    password: string;
+    name: string;
+    signup_prompt: string;
+    login_prompt: string;
     // Dashboards
     public_dashboard_title: string;
     user_dashboard_title: string;
@@ -36,6 +42,7 @@ type TranslationKeys = {
     refresh_analysis: string;
     re_analyzing: string;
     data_trends_title: string;
+    system_flow_title: string;
     precautions_title: string;
     precautions_individuals_title: string;
     precautions_individuals_1: string;
@@ -64,6 +71,12 @@ type TranslationKeys = {
     // Asha Dashboard
     submit_water_report_title: string;
     submit_disease_report_title: string;
+    gamification_title: string;
+    reports_submitted: string;
+    points_earned: string;
+    badges_earned: string;
+    voice_reporting_title: string;
+    voice_reporting_desc: string;
     // Official Dashboard
     active_alerts_title: string;
     th_risk: string;
@@ -94,9 +107,38 @@ type TranslationKeys = {
     submitting_button: string;
     submit_success: string;
     submit_error: string;
+    // Voice Reporting
+    start_recording: string;
+    stop_recording: string;
+    recording: string;
+    processing: string;
+    transcription_result: string;
+    voice_error_mic: string;
+    voice_error_api: string;
     // Trend Chart
     chart_water_title: string;
     chart_disease_title: string;
+    // System Flowchart
+    flow_start: string;
+    flow_iot: string;
+    flow_iot_desc: string;
+    flow_cv: string;
+    flow_cv_desc: string;
+    flow_voice: string;
+    flow_voice_desc: string;
+    flow_blockchain: string;
+    flow_blockchain_desc: string;
+    flow_ai: string;
+    flow_ai_desc: string;
+    flow_dashboard: string;
+    flow_dashboard_desc: string;
+    flow_gamification: string;
+    flow_gamification_desc: string;
+    flow_impact: string;
+    flow_impact_1: string;
+    flow_impact_2: string;
+    flow_impact_3: string;
+    flow_end: string;
 };
 
 export const translations: { [key: string]: TranslationKeys } = {
@@ -105,13 +147,19 @@ export const translations: { [key: string]: TranslationKeys } = {
         welcome: 'Welcome, {{name}}',
         logout: 'Logout',
         login: 'Login',
-        login_modal_title: 'Simulate Login',
-        login_modal_desc: 'Select a user role to view the corresponding dashboard.',
-        user_role_label: 'User Role',
+        signup: 'Sign Up',
+        login_modal_title: 'Login to Your Account',
+        login_modal_desc: 'Enter your credentials to access your dashboard.',
+        user_role_label: 'Select Your Role',
         role_user: 'Standard User',
         role_asha: 'ASHA Worker / Volunteer',
         role_official: 'District Official',
         login_as: 'Login as {{role}}',
+        email: 'Email Address',
+        password: 'Password',
+        name: 'Full Name',
+        signup_prompt: "Don't have an account?",
+        login_prompt: 'Already have an account?',
         public_dashboard_title: 'Water Health Dashboard: Northeast India Focus',
         user_dashboard_title: 'Your Dashboard',
         asha_dashboard_title: 'ASHA Worker & Volunteer Portal',
@@ -124,6 +172,7 @@ export const translations: { [key: string]: TranslationKeys } = {
         refresh_analysis: 'Refresh Analysis',
         re_analyzing: 'Re-analyzing...',
         data_trends_title: 'Data Trends in Northeast India',
+        system_flow_title: 'How It Works: Our System Architecture',
         precautions_title: 'Precautions & Regional Guidelines',
         precautions_individuals_title: 'For Individuals',
         precautions_individuals_1: 'Drink only boiled, filtered, or purified water.',
@@ -150,6 +199,12 @@ export const translations: { [key: string]: TranslationKeys } = {
         analyze_water_image_disclaimer: 'Disclaimer: This is not a substitute for professional lab testing.',
         submit_water_report_title: 'Submit Water Quality Report',
         submit_disease_report_title: 'Submit Disease Case Report',
+        gamification_title: "Your Activity",
+        reports_submitted: "Reports Submitted",
+        points_earned: "Points Earned",
+        badges_earned: "Badges Earned",
+        voice_reporting_title: "Submit Report by Voice",
+        voice_reporting_desc: "Record your report in your local dialect. The system will transcribe it automatically.",
         active_alerts_title: 'Active Alerts',
         th_risk: 'Risk',
         th_alert: 'Alert',
@@ -177,21 +232,54 @@ export const translations: { [key: string]: TranslationKeys } = {
         submitting_button: 'Submitting...',
         submit_success: 'Report submitted successfully!',
         submit_error: 'Submission failed. Please try again.',
+        start_recording: 'Start Recording',
+        stop_recording: 'Stop Recording',
+        recording: 'Recording...',
+        processing: 'Processing...',
+        transcription_result: 'Transcription Result:',
+        voice_error_mic: 'Microphone access denied. Please enable it in your browser settings.',
+        voice_error_api: 'An API error occurred. Please try again.',
         chart_water_title: 'Water Quality Trends',
         chart_disease_title: 'Daily Disease Cases',
+        flow_start: 'Start',
+        flow_iot: 'IoT Sensors',
+        flow_iot_desc: '(TDS, BOD, Turbidity)',
+        flow_cv: 'Computer Vision',
+        flow_cv_desc: '(Water Strip Photos)',
+        flow_voice: 'Voice Reporting',
+        flow_voice_desc: '(Local Dialects)',
+        flow_blockchain: 'Blockchain Ledger',
+        flow_blockchain_desc: '+ Smart Contracts',
+        flow_ai: 'AI/ML Prediction',
+        flow_ai_desc: '(3-7 Days Early Warning)',
+        flow_dashboard: 'Alerts and Dashboard',
+        flow_dashboard_desc: '(Community + Gov)',
+        flow_gamification: 'Gamification',
+        flow_gamification_desc: '(Rewards for ASHA)',
+        flow_impact: 'Impact',
+        flow_impact_1: 'Early Detection',
+        flow_impact_2: 'Transparency',
+        flow_impact_3: 'Better Health',
+        flow_end: 'End',
     },
     hi: {
         notifications: 'सूचनाएं',
         welcome: 'स्वागत है, {{name}}',
         logout: 'लॉग आउट',
         login: 'लॉग इन करें',
-        login_modal_title: 'लॉगिन का अनुकरण करें',
-        login_modal_desc: 'संबंधित डैशबोर्ड देखने के लिए एक उपयोगकर्ता भूमिका चुनें।',
-        user_role_label: 'उपयोगकर्ता की भूमिका',
+        signup: 'साइन अप करें',
+        login_modal_title: 'अपने खाते में પ્રવેશ करें',
+        login_modal_desc: 'अपने डैशबोर्ड तक पहुंचने के लिए अपनी क्रेडेंशियल दर्ज करें।',
+        user_role_label: 'अपनी भूमिका चुनें',
         role_user: 'मानक उपयोगकर्ता',
         role_asha: 'आशा कार्यकर्ता / स्वयंसेवक',
         role_official: 'जिला अधिकारी',
         login_as: '{{role}} के रूप में लॉगिन करें',
+        email: 'ईमेल पता',
+        password: 'पासवर्ड',
+        name: 'पूरा नाम',
+        signup_prompt: 'खाता नहीं है?',
+        login_prompt: 'पहले से ही एक खाता है?',
         public_dashboard_title: 'जल स्वास्थ्य डैशबोर्ड: पूर्वोत्तर भारत फोकस',
         user_dashboard_title: 'आपका डैशबोर्ड',
         asha_dashboard_title: 'आशा कार्यकर्ता और स्वयंसेवक पोर्टल',
@@ -204,6 +292,7 @@ export const translations: { [key: string]: TranslationKeys } = {
         refresh_analysis: 'विश्लेषण ताज़ा करें',
         re_analyzing: 'पुनः विश्लेषण किया जा रहा है...',
         data_trends_title: 'पूर्वोत्तर भारत में डेटा रुझान',
+        system_flow_title: 'यह कैसे काम करता है: हमारी सिस्टम वास्तुकला',
         precautions_title: 'सावधानियां और क्षेत्रीय दिशानिर्देश',
         precautions_individuals_title: 'व्यक्तियों के लिए',
         precautions_individuals_1: 'केवल उबला हुआ, फ़िल्टर किया हुआ या शुद्ध पानी पिएं।',
@@ -230,6 +319,12 @@ export const translations: { [key: string]: TranslationKeys } = {
         analyze_water_image_disclaimer: 'अस्वीकरण: यह पेशेवर प्रयोगशाला परीक्षण का विकल्प नहीं है।',
         submit_water_report_title: 'पानी की गुणवत्ता रिपोर्ट जमा करें',
         submit_disease_report_title: 'रोग मामले की रिपोर्ट जमा करें',
+        gamification_title: "आपकी गतिविधि",
+        reports_submitted: "रिपोर्ट प्रस्तुत की गई",
+        points_earned: "अंक अर्जित",
+        badges_earned: "बैज अर्जित",
+        voice_reporting_title: "आवाज द्वारा रिपोर्ट जमा करें",
+        voice_reporting_desc: "अपनी रिपोर्ट अपनी स्थानीय बोली में रिकॉर्ड करें। सिस्टम इसे स्वचालित रूप से लिखित रूप में बदल देगा।",
         active_alerts_title: 'सक्रिय अलर्ट',
         th_risk: 'जोखिम',
         th_alert: 'चेतावनी',
@@ -257,7 +352,34 @@ export const translations: { [key: string]: TranslationKeys } = {
         submitting_button: 'जमा हो रहा है...',
         submit_success: 'रिपोर्ट सफलतापूर्वक सबमिट की गई!',
         submit_error: 'सबमिशन विफल। कृपया पुनः प्रयास करें।',
+        start_recording: 'रिकॉर्डिंग शुरू करें',
+        stop_recording: 'रिकॉर्डिंग बंद करें',
+        recording: 'रिकॉर्डिंग हो रही है...',
+        processing: 'संसाधित हो रहा है...',
+        transcription_result: 'प्रतिलेखन परिणाम:',
+        voice_error_mic: 'माइक्रोफ़ोन एक्सेस अस्वीकृत। कृपया इसे अपनी ब्राउज़र सेटिंग्स में सक्षम करें।',
+        voice_error_api: 'एक एपीआई त्रुटि हुई। कृपया पुन: प्रयास करें।',
         chart_water_title: 'पानी की गुणवत्ता के रुझान',
         chart_disease_title: 'दैनिक रोग के मामले',
+        flow_start: 'शुरू',
+        flow_iot: 'आईओटी सेंसर',
+        flow_iot_desc: '(टीडीएस, बीओडी, टर्बिडिटी)',
+        flow_cv: 'कंप्यूटर विजन',
+        flow_cv_desc: '(पानी की पट्टी की तस्वीरें)',
+        flow_voice: 'वॉयस रिपोर्टिंग',
+        flow_voice_desc: '(स्थानीय बोलियाँ)',
+        flow_blockchain: 'ब्लॉकचेन लेजर',
+        flow_blockchain_desc: '+ स्मार्ट अनुबंध',
+        flow_ai: 'एआई/एमएल भविष्यवाणी',
+        flow_ai_desc: '(3-7 दिन पूर्व चेतावनी)',
+        flow_dashboard: 'अलर्ट और डैशबोर्ड',
+        flow_dashboard_desc: '(समुदाय + सरकार)',
+        flow_gamification: 'गेमिफिकेशन',
+        flow_gamification_desc: '(आशा के लिए पुरस्कार)',
+        flow_impact: 'प्रभाव',
+        flow_impact_1: 'जल्दी पता लगाना',
+        flow_impact_2: 'पारदर्शिता',
+        flow_impact_3: 'बेहतर स्वास्थ्य',
+        flow_end: 'समाप्त',
     },
 };
