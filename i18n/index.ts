@@ -1,9 +1,12 @@
-
 export const LANGUAGES = {
   en: 'English',
   hi: 'हिन्दी (Hindi)',
-  es: 'Español',
-  fr: 'Français',
+  te: 'తెలుగు (Telugu)',
+  kn: 'ಕನ್ನಡ (Kannada)',
+  mr: 'मराठी (Marathi)',
+  gu: 'ગુજરાતી (Gujarati)',
+  ta: 'தமிழ் (Tamil)',
+  pa: 'ਪੰਜਾਬੀ (Punjabi)',
 };
 
 export const DEFAULT_LANGUAGE = 'en';
@@ -77,6 +80,8 @@ type TranslationKeys = {
     badges_earned: string;
     voice_reporting_title: string;
     voice_reporting_desc: string;
+    send_alert_title: string;
+    send_alert_desc: string;
     // Official Dashboard
     active_alerts_title: string;
     th_risk: string;
@@ -115,9 +120,34 @@ type TranslationKeys = {
     transcription_result: string;
     voice_error_mic: string;
     voice_error_api: string;
+    submit_voice_report: string;
+    submitting_voice_report: string;
+    // Send Alert Form
+    label_alert_type: string;
+    alert_type_sms: string;
+    alert_type_official: string;
+    label_message: string;
+    send_alert_button: string;
+    sending_alert_button: string;
+    alert_send_success: string;
+    alert_send_error: string;
+    sms_send_success: string;
     // Trend Chart
     chart_water_title: string;
     chart_disease_title: string;
+    // AI Chart Update
+    ai_chart_update_title: string;
+    ai_chart_update_desc: string;
+    get_ai_update_button: string;
+    getting_ai_update_button: string;
+    // Latest Reports
+    latest_reports_title: string;
+    download_pdf: string;
+    report_type_water: string;
+    report_type_disease: string;
+    // Image Gallery
+    image_gallery_title: string;
+    image_gallery_desc: string;
     // System Flowchart
     flow_start: string;
     flow_iot: string;
@@ -205,6 +235,8 @@ export const translations: { [key: string]: TranslationKeys } = {
         badges_earned: "Badges Earned",
         voice_reporting_title: "Submit Report by Voice",
         voice_reporting_desc: "Record your report in your local dialect. The system will transcribe it automatically.",
+        send_alert_title: "Send Community Alert",
+        send_alert_desc: "Send an SMS or official alert to the community or authorities regarding a water quality issue.",
         active_alerts_title: 'Active Alerts',
         th_risk: 'Risk',
         th_alert: 'Alert',
@@ -236,11 +268,32 @@ export const translations: { [key: string]: TranslationKeys } = {
         stop_recording: 'Stop Recording',
         recording: 'Recording...',
         processing: 'Processing...',
-        transcription_result: 'Transcription Result:',
+        transcription_result: 'Transcription:',
         voice_error_mic: 'Microphone access denied. Please enable it in your browser settings.',
         voice_error_api: 'An API error occurred. Please try again.',
+        submit_voice_report: "Submit Transcribed Report",
+        submitting_voice_report: "Submitting...",
+        label_alert_type: "Alert Type",
+        alert_type_sms: "Community SMS",
+        alert_type_official: "Official Alert",
+        label_message: "Message",
+        send_alert_button: "Send Alert",
+        sending_alert_button: "Sending...",
+        alert_send_success: "Alert sent successfully!",
+        alert_send_error: "Failed to send alert. Please try again.",
+        sms_send_success: "SMS alerts successfully sent to {{count}} people in {{location}}.",
         chart_water_title: 'Water Quality Trends',
         chart_disease_title: 'Daily Disease Cases',
+        ai_chart_update_title: 'AI-Powered Daily Updates',
+        ai_chart_update_desc: "Charts are updated based on AI analysis of daily news. Click to fetch the latest insights.",
+        get_ai_update_button: "Get Today's AI Update",
+        getting_ai_update_button: "Getting Update...",
+        latest_reports_title: "Latest ASHA Worker Reports",
+        download_pdf: "Download PDF",
+        report_type_water: "Water Quality",
+        report_type_disease: "Disease Case",
+        image_gallery_title: "Northeast India: Water Sources Gallery",
+        image_gallery_desc: "A visual collection of key water bodies across the region, highlighting their natural beauty and importance to local communities.",
         flow_start: 'Start',
         flow_iot: 'IoT Sensors',
         flow_iot_desc: '(TDS, BOD, Turbidity)',
@@ -325,6 +378,8 @@ export const translations: { [key: string]: TranslationKeys } = {
         badges_earned: "बैज अर्जित",
         voice_reporting_title: "आवाज द्वारा रिपोर्ट जमा करें",
         voice_reporting_desc: "अपनी रिपोर्ट अपनी स्थानीय बोली में रिकॉर्ड करें। सिस्टम इसे स्वचालित रूप से लिखित रूप में बदल देगा।",
+        send_alert_title: "सामुदायिक चेतावनी भेजें",
+        send_alert_desc: "पानी की गुणवत्ता के मुद्दे के बारे में समुदाय या अधिकारियों को एक एसएमएस या आधिकारिक चेतावनी भेजें।",
         active_alerts_title: 'सक्रिय अलर्ट',
         th_risk: 'जोखिम',
         th_alert: 'चेतावनी',
@@ -356,11 +411,32 @@ export const translations: { [key: string]: TranslationKeys } = {
         stop_recording: 'रिकॉर्डिंग बंद करें',
         recording: 'रिकॉर्डिंग हो रही है...',
         processing: 'संसाधित हो रहा है...',
-        transcription_result: 'प्रतिलेखन परिणाम:',
+        transcription_result: 'प्रतिलेखन:',
         voice_error_mic: 'माइक्रोफ़ोन एक्सेस अस्वीकृत। कृपया इसे अपनी ब्राउज़र सेटिंग्स में सक्षम करें।',
         voice_error_api: 'एक एपीआई त्रुटि हुई। कृपया पुन: प्रयास करें।',
+        submit_voice_report: "प्रतिलेखित रिपोर्ट जमा करें",
+        submitting_voice_report: "जमा हो रहा है...",
+        label_alert_type: "चेतावनी का प्रकार",
+        alert_type_sms: "सामुदायिक एसएमएस",
+        alert_type_official: "आधिकारिक चेतावनी",
+        label_message: "संदेश",
+        send_alert_button: "चेतावनी भेजें",
+        sending_alert_button: "भेजा जा रहा है...",
+        alert_send_success: "चेतावनी सफलतापूर्वक भेजी गई!",
+        alert_send_error: "चेतावनी भेजने में विफल। कृपया पुनः प्रयास करें।",
+        sms_send_success: "{{location}} में {{count}} लोगों को सफलतापूर्वक एसएमएस अलर्ट भेजे गए।",
         chart_water_title: 'पानी की गुणवत्ता के रुझान',
         chart_disease_title: 'दैनिक रोग के मामले',
+        ai_chart_update_title: 'एआई-संचालित दैनिक अपडेट',
+        ai_chart_update_desc: "चार्ट दैनिक समाचारों के एआई विश्लेषण के आधार पर अपडेट किए जाते हैं। नवीनतम जानकारी प्राप्त करने के लिए क्लिक करें।",
+        get_ai_update_button: "आज का एआई अपडेट प्राप्त करें",
+        getting_ai_update_button: "अपडेट हो रहा है...",
+        latest_reports_title: "नवीनतम आशा कार्यकर्ता रिपोर्ट",
+        download_pdf: "पीडीएफ डाउनलोड करें",
+        report_type_water: "पानी की गुणवत्ता",
+        report_type_disease: "रोग मामला",
+        image_gallery_title: "पूर्वोत्तर भारत: जल स्रोत गैलरी",
+        image_gallery_desc: "क्षेत्र भर के प्रमुख जल निकायों का एक दृश्य संग्रह, जो उनकी प्राकृतिक सुंदरता और स्थानीय समुदायों के लिए उनके महत्व को उजागर करता है।",
         flow_start: 'शुरू',
         flow_iot: 'आईओटी सेंसर',
         flow_iot_desc: '(टीडीएस, बीओडी, टर्बिडिटी)',

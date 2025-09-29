@@ -112,3 +112,68 @@ export const translateText = async (text: string, targetLanguage: string): Promi
         return text; // Fallback to original text
     }
 }
+
+const dailyUpdateSchema = {
+    type: Type.OBJECT,
+    properties: {
+        waterReport: {
+            type: Type.OBJECT,
+            properties: {
+                location: { type: Type.STRING },
+                ph: { type: Type.NUMBER },
+                turbidity: { type: Type.NUMBER },
+                bacteria: { type: Type.NUMBER },
+            },
+            required: ["location", "ph", "turbidity", "bacteria"],
+        },
+        diseaseReport: {
+            type: Type.OBJECT,
+            properties: {
+                location: { type: Type.STRING },
+                disease: { type: Type.STRING },
+                caseCount: { type: Type.NUMBER },
+            },
+            required: ["location", "disease", "caseCount"],
+        },
+    },
+    required: ["waterReport", "diseaseReport"],
+};
+
+export const getDailyAIUpdate = async (waterReports: WaterQualityReport[], diseaseReports: DiseaseCaseReport[]): Promise<{ waterReport: any, diseaseReport: any }> => {
+    const prompt = `
+        You are a public health AI data simulator for the "Wellness Wave" project in Northeast India.
+        Your task is to generate plausible new data points for today based on recent trends and simulated news events.
+
+        Current Data Context (most recent reports):
+        Water Quality: ${JSON.stringify(waterReports.slice(0, 3), null, 2)}
+        Disease Cases: ${JSON.stringify(diseaseReports.slice(0, 3), null, 2)}
+
+        Simulated News for Today: "Local news outlets report minor, localized flooding in areas around Agartala, Tripura, after heavy overnight rainfall. Health officials are monitoring the situation for potential water contamination."
+
+        Based on this simulated news and the provided data:
+        1. Generate one new water quality report for "Agartala, Tripura". The flooding should plausibly increase turbidity and bacteria levels slightly compared to recent data. Keep pH stable.
+        2. Generate one new disease case report for "Agartala, Tripura". The potential contamination might lead to a small, new cluster of "Diarrhea" cases.
+        
+        Return the two new reports in the specified JSON format. Do not include any explanation.
+    `;
+
+    try {
+        const response: GenerateContentResponse = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: dailyUpdateSchema,
+            }
+        });
+        const jsonString = response.text.trim();
+        return JSON.parse(jsonString);
+    } catch (error) {
+        console.error("Error generating daily AI update:", error);
+        // Fallback with some plausible data so the UI doesn't break
+        return {
+            waterReport: { location: 'Agartala, Tripura', ph: 6.9, turbidity: 75, bacteria: 1100 },
+            diseaseReport: { location: 'Agartala, Tripura', disease: 'Diarrhea', caseCount: 8 },
+        };
+    }
+};

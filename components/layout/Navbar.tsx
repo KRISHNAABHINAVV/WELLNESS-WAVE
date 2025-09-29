@@ -1,19 +1,19 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import LoginModal from '../auth/LoginModal';
 import Button from '../ui/Button';
 import { BellIcon, LoginIcon, LogoutIcon, TranslateIcon, WaterDropIcon } from '../ui/Icons';
-import { MOCK_ALERTS } from '../../constants';
 import { Alert, RiskLevel } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTranslation } from '../../hooks/useTranslation';
 import { LANGUAGES } from '../../i18n';
+import { useAlerts } from '../../context/AlertsContext';
 
 const Navbar: React.FC = () => {
     const { user, logout } = useAuth();
     const { t } = useTranslation();
     const { language, setLanguage } = useLanguage();
+    const { alerts } = useAlerts();
     const [isLoginModalOpen, setLoginModalOpen] = useState(false);
     const [isAlertsOpen, setAlertsOpen] = useState(false);
 
@@ -39,16 +39,17 @@ const Navbar: React.FC = () => {
                                     className="p-2 rounded-full text-gray-600 hover:bg-base-300 hover:text-primary transition-colors"
                                 >
                                     <BellIcon className="h-6 w-6" />
-                                    {MOCK_ALERTS.length > 0 && <span className="absolute top-0 right-0 block h-3 w-3 rounded-full bg-error ring-2 ring-base-100 animate-pulse"></span>}
+                                    {alerts.length > 0 && <span className="absolute top-0 right-0 block h-3 w-3 rounded-full bg-error ring-2 ring-base-100 animate-pulse"></span>}
                                 </button>
                                 {isAlertsOpen && (
-                                    <div className="absolute right-0 mt-2 w-80 bg-base-100 rounded-lg shadow-xl p-4 z-50 border border-base-300">
+                                    <div className="absolute right-0 mt-2 w-80 md:w-96 bg-base-100 rounded-lg shadow-xl p-4 z-50 border border-base-300">
                                         <h3 className="font-bold text-lg mb-2 text-base-content">{t('notifications')}</h3>
                                         <ul className="space-y-2 max-h-96 overflow-y-auto">
-                                          {MOCK_ALERTS.map((alert: Alert) => (
-                                            <li key={alert.id} className={`p-2 rounded-md bg-base-200 border-l-4 ${riskColorMap[alert.riskLevel].replace('text-', 'border-')}`}>
+                                          {alerts.map((alert: Alert) => (
+                                            <li key={alert.id} className={`p-3 rounded-md bg-base-200 border-l-4 ${riskColorMap[alert.riskLevel].replace('text-', 'border-')}`}>
                                               <p className={`font-semibold ${riskColorMap[alert.riskLevel]}`}>{alert.title}</p>
-                                              <p className="text-sm text-gray-500">{alert.location}</p>
+                                              <p className="text-sm text-base-content/80 mt-1">{alert.description}</p>
+                                              <p className="text-xs text-base-content/60 mt-2 font-medium">{alert.location}</p>
                                             </li>
                                           ))}
                                         </ul>

@@ -1,19 +1,19 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import Card from '../ui/Card';
-import { MOCK_ALERTS } from '../../constants';
 import { Alert, AlertStatus, RiskLevel } from '../../types';
 import Button from '../ui/Button';
 import { CheckCircleIcon, XCircleIcon, AlertTriangleIcon } from '../ui/Icons';
 import { useTranslation } from '../../hooks/useTranslation';
 import CommonDashboardElements from './CommonDashboardElements';
+import { useAlerts } from '../../context/AlertsContext';
 
 const OfficialDashboard: React.FC = () => {
-    const [alerts, setAlerts] = useState<Alert[]>(MOCK_ALERTS);
+    const { alerts, updateAlertStatus } = useAlerts();
     const { t } = useTranslation();
 
     const handleStatusChange = (id: string, newStatus: AlertStatus) => {
-        setAlerts(alerts.map(alert => alert.id === id ? { ...alert, status: newStatus } : alert));
+        updateAlertStatus(id, newStatus);
     };
 
     const statusStyles: Record<AlertStatus, string> = {

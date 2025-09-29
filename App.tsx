@@ -9,6 +9,8 @@ import AshaDashboard from './components/dashboards/AshaDashboard';
 import OfficialDashboard from './components/dashboards/OfficialDashboard';
 import { UserRole } from './types';
 import Footer from './components/layout/Footer';
+import { AlertsProvider } from './context/AlertsContext';
+import { DataProvider } from './context/DataContext';
 
 const AppContent: React.FC = () => {
     const { user } = useAuth();
@@ -44,7 +46,11 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <LanguageProvider>
-        <AppContent />
+        <AlertsProvider>
+          <DataProvider>
+            <AppContent />
+          </DataProvider>
+        </AlertsProvider>
       </LanguageProvider>
     </AuthProvider>
   );

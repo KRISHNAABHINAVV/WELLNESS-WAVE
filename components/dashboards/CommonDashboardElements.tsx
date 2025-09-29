@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Card from '../ui/Card';
-import { MOCK_WATER_REPORTS, MOCK_DISEASE_REPORTS } from '../../constants';
-import { generateRiskAnalysis } from '../../services/geminiService';
+import { generateRiskAnalysis, getDailyAIUpdate } from '../../services/geminiService';
 import Button from '../ui/Button';
 import { AlertTriangleIcon, CheckCircleIcon, CubeIcon, GlobeIcon, LoaderIcon } from '../ui/Icons';
 import TrendChart from '../visualizations/TrendChart';
@@ -10,18 +9,40 @@ import RiskGlobe from '../visualizations/RiskGlobe';
 import { useTranslation } from '../../hooks/useTranslation';
 import { AIRiskAnalysis } from '../../types';
 import SystemFlowchart from '../features/SystemFlowchart';
+import { useData } from '../../context/DataContext';
+import LatestReports from '../features/LatestReports';
 
 const CommonDashboardElements: React.FC = () => {
     const [aiRiskOutput, setAiRiskOutput] = useState<AIRiskAnalysis | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isAiUpdating, setIsAiUpdating] = useState<boolean>(false);
     const { t } = useTranslation();
+    const { waterReports, diseaseReports, addWaterReport, addDiseaseReport } = useData();
 
     const getAnalysis = useCallback(async () => {
         setIsLoading(true);
-        const analysis = await generateRiskAnalysis(MOCK_WATER_REPORTS, MOCK_DISEASE_REPORTS);
+        const analysis = await generateRiskAnalysis(waterReports, diseaseReports);
         setAiRiskOutput(analysis);
         setIsLoading(false);
-    }, []);
+    }, [waterReports, diseaseReports]);
+
+    const handleAiUpdate = useCallback(async () => {
+        setIsAiUpdating(true);
+        const newData = await getDailyAIUpdate(waterReports, diseaseReports);
+        if (newData && newData.waterReport && newData.diseaseReport) {
+            addWaterReport({
+                ...newData.waterReport,
+                lat: 23.8315, // Coords for Agartala
+                lng: 91.2868,
+                reportedBy: 'AI News Analysis',
+            });
+            addDiseaseReport({
+                ...newData.diseaseReport,
+                reportedBy: 'AI News Analysis',
+            });
+        }
+        setIsAiUpdating(false);
+    }, [waterReports, diseaseReports, addWaterReport, addDiseaseReport]);
 
     useEffect(() => {
         getAnalysis();
@@ -65,8 +86,17 @@ const CommonDashboardElements: React.FC = () => {
             </div>
 
             <Card title={t('data_trends_title')} className="shadow-lg">
-                <TrendChart waterData={MOCK_WATER_REPORTS} diseaseData={MOCK_DISEASE_REPORTS} />
+                <div className="text-center mb-4 border-b border-base-300 pb-4">
+                     <h4 className="font-semibold text-lg text-primary">{t('ai_chart_update_title')}</h4>
+                     <p className="text-sm text-gray-500 mt-1">{t('ai_chart_update_desc')}</p>
+                     <Button onClick={handleAiUpdate} isLoading={isAiUpdating} disabled={isAiUpdating} className="mt-3" size="sm" variant="secondary">
+                        {isAiUpdating ? t('getting_ai_update_button') : t('get_ai_update_button')}
+                     </Button>
+                </div>
+                <TrendChart waterData={waterReports} diseaseData={diseaseReports} />
             </Card>
+
+            <LatestReports />
 
             <Card title={t('system_flow_title')} icon={<CubeIcon className="h-6 w-6"/>} className="shadow-lg">
                 <SystemFlowchart />

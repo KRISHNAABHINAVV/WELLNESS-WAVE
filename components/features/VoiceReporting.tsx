@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality, Blob, LiveSession } from '@google/genai';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -32,6 +33,9 @@ const VoiceReporting: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [transcription, setTranscription] = useState('');
     const [error, setError] = useState<string | null>(null);
+
+    const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+    const [submissionStatus, setSubmissionStatus] = useState<'success' | 'error' | null>(null);
 
     const sessionPromiseRef = useRef<Promise<LiveSession> | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
@@ -70,6 +74,7 @@ const VoiceReporting: React.FC = () => {
     const handleStartRecording = async () => {
         setError(null);
         setTranscription('');
+        setSubmissionStatus(null);
         setIsLoading(true);
 
         try {
@@ -134,6 +139,21 @@ const VoiceReporting: React.FC = () => {
         });
     };
 
+    const handleSubmitReport = () => {
+        if (!transcription) return;
+        setIsSubmittingReport(true);
+        setSubmissionStatus(null);
+        // Simulate API call for submission
+        setTimeout(() => {
+            const success = Math.random() > 0.2;
+            setIsSubmittingReport(false);
+            setSubmissionStatus(success ? 'success' : 'error');
+            if (success) {
+                setTranscription(''); // Clear on success
+            }
+        }, 1500);
+    };
+
     // Ensure cleanup on component unmount
     useEffect(() => {
         return () => handleStopRecording();
@@ -143,7 +163,7 @@ const VoiceReporting: React.FC = () => {
         <div className="space-y-4">
             <div className="flex justify-center">
                 {!isRecording ? (
-                    <Button onClick={handleStartRecording} isLoading={isLoading} disabled={isLoading} variant="primary" size="md">
+                    <Button onClick={handleStartRecording} isLoading={isLoading} disabled={isLoading || isSubmittingReport} variant="primary" size="md">
                         <MicIcon className="w-5 h-5 mr-2"/>
                         {isLoading ? t('processing') : t('start_recording')}
                     </Button>
@@ -167,10 +187,26 @@ const VoiceReporting: React.FC = () => {
 
             {error && <p className="text-center text-sm text-error">{error}</p>}
 
-            {transcription && (
-                <div className="bg-base-200 p-3 rounded-lg">
-                    <h4 className="font-bold text-md text-primary mb-2">{t('transcription_result')}</h4>
-                    <p className="text-base-content whitespace-pre-wrap text-sm">{transcription}</p>
+            {transcription && !isRecording && (
+                <div className="bg-base-200 p-3 rounded-lg space-y-3">
+                    <h4 className="font-bold text-md text-primary">{t('transcription_result')}</h4>
+                    <textarea
+                        className="w-full bg-base-300 border-base-100 rounded-md p-2 text-base-content focus:ring-primary focus:border-primary text-sm"
+                        rows={4}
+                        value={transcription}
+                        onChange={(e) => setTranscription(e.target.value)}
+                        aria-label="Transcription Result"
+                    />
+                    <Button onClick={handleSubmitReport} isLoading={isSubmittingReport} disabled={isSubmittingReport || !transcription.trim()} className="w-full">
+                        {isSubmittingReport ? t('submitting_voice_report') : t('submit_voice_report')}
+                    </Button>
+                </div>
+            )}
+
+            {submissionStatus && (
+                <div className="text-center text-sm mt-2">
+                    {submissionStatus === 'success' && <p className="text-success">{t('submit_success')}</p>}
+                    {submissionStatus === 'error' && <p className="text-error">{t('submit_error')}</p>}
                 </div>
             )}
         </div>
